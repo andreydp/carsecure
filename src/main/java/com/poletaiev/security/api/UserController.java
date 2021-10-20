@@ -1,6 +1,7 @@
 package com.poletaiev.security.api;
 
 import com.poletaiev.security.entity.User;
+import com.poletaiev.security.repo.UserRepository;
 import com.poletaiev.security.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -18,14 +19,14 @@ import java.util.List;
 @RequestMapping("/api/users")
 public class UserController {
     @Autowired
-    UserService userService;
+    UserRepository userRepository;
 
     @GetMapping
     @PreAuthorize("hasAuthority('users:read')")
     ResponseEntity<Page<User>> getUsers(
             @PageableDefault(size = 2)
                     Pageable pageable) {
-        List<User> users = userService.getAllUsers();
+        List<User> users = userRepository.findAll();
         int sizeOfUsers = users.size();
         int start = (int) pageable.getOffset();
         int offset = start + pageable.getPageSize();
@@ -41,20 +42,20 @@ public class UserController {
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('users:read')")
     public User getById( @PathVariable Long id) {
-        return userService.findById(id);
+        return userRepository.findById(id).orElse(null);
     }
 
     @PostMapping
     @PreAuthorize("hasAuthority('users:write')")
     public User create(@RequestBody User user) {
-        userService.save(user);
+        userRepository.save(user);
         return user;
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('users:write')")
     public void deleteById(@PathVariable Long id) {
-        userService.deleteById(id);
+        userRepository.deleteById(id);
     }
 
 }
