@@ -1,7 +1,7 @@
 package com.poletaiev.security.service;
 
 import com.poletaiev.security.entity.User;
-import com.poletaiev.security.repo.UserRepo;
+import com.poletaiev.security.repo.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,21 +10,25 @@ import java.util.List;
 @Service
 public class UserService {
     @Autowired
-    private UserRepo userRepo;
+    private UserRepository userRepository;
 
     public List<User> getAllUsers() {
-        return userRepo.findAll();
+        return userRepository.findAll();
     }
 
     public User findById(Long id) {
-        return userRepo.findById(id);
+        return userRepository.findById(id).orElse(null);
+    }
+
+    public User findByEmail(String email) {
+        return userRepository.findUserByEmail(email).orElse(null);
     }
 
     public boolean save(User user) {
-        return userRepo.save(user);
+        return userRepository.save(user) != null;
     }
 
     public void deleteById(Long id) {
-        userRepo.deleteById(id);
+        userRepository.deleteById(id);
     }
 }
